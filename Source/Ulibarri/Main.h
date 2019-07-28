@@ -32,13 +32,8 @@ class ULIBARRI_API AMain : public ACharacter
 public:
 	// Sets default values for this character's properties
 	AMain();
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
-	class UParticleSystem* HitParticles;
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
-	class USoundCue* HitSound;
 
 	TArray<FVector> PickupLocations;
 
@@ -181,8 +176,5 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Anims")
 	class UAnimMontage* CombatMontage;
-
-	UFUNCTION(BlueprintCallable)
-	void PlaySwingSound();
 
 };

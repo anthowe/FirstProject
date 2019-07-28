@@ -2,14 +2,13 @@
 
 #include "Weapon.h"
 #include "Main.h"
+#include "Enemy.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Sound/SoundCue.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Components/BoxComponent.h"
-#include "Enemy.h"
-#include "Engine/SkeletalMeshSocket.h"
 
 
 AWeapon::AWeapon()
@@ -20,13 +19,12 @@ AWeapon::AWeapon()
 	CombatCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("CombatCollision"));
 	CombatCollision->SetupAttachment(GetRootComponent());
 
-	
 
 	bWeaponParticles = false;
 
 	WeaponState = EWeaponState::EWS_Pickup;
 
-	Damage = 15.f;
+	Damage = 25.f;
 }
 
 void AWeapon::BeginPlay()
@@ -36,11 +34,13 @@ void AWeapon::BeginPlay()
 	CombatCollision->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::CombatOnOverlapBegin);
 	CombatCollision->OnComponentEndOverlap.AddDynamic(this, &AWeapon::CombatOnOverlapEnd);
 
+
 	CombatCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	CombatCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	CombatCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	CombatCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 }
+
 void AWeapon::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
 	Super::OnOverlapBegin(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
@@ -107,6 +107,7 @@ void AWeapon::CombatOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AAc
 	if (OtherActor)
 	{
 		AEnemy* Enemy = Cast<AEnemy>(OtherActor);
+
 		if (Enemy)
 		{
 			if (Enemy->HitParticles)
@@ -115,17 +116,14 @@ void AWeapon::CombatOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AAc
 				if (WeaponSocket)
 				{
 					FVector SocketLocation = WeaponSocket->GetSocketLocation(SkeletalMesh);
-					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Enemy->HitParticles, GetActorLocation(), FRotator(0.f), false);
+					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Enemy->HitParticles, SocketLocation, FRotator(0.f), false);
 				}
 				
-			}
-			if (Enemy->HitSound)
-			{
-				UGameplayStatics::PlaySound2D(this, Enemy->HitSound);
 			}
 		}
 	}
 }
+
 
 void AWeapon::CombatOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
@@ -135,7 +133,6 @@ void AWeapon::CombatOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActo
 void AWeapon::ActivateCollision()
 {
 	CombatCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-
 }
 
 

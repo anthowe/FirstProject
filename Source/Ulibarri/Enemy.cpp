@@ -6,12 +6,6 @@
 #include "AI/Navigation/NavigationTypes.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Main.h"
-#include "Components/BoxComponent.h"
-#include "Components/SkeletalMeshComponent.h"
-#include "Kismet/GameplayStatics.h"
-#include "Engine/SkeletalMeshSocket.h"
-#include "Sound/SoundCue.h"
-
 
 // Sets default values
 AEnemy::AEnemy()
@@ -27,15 +21,12 @@ AEnemy::AEnemy()
 	CombatSphere->SetupAttachment(GetRootComponent());
 	CombatSphere->InitSphereRadius(75.f);
 
-	CombatCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("CombatCollision"));
-	CombatCollision->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("EnemySocket"));
-
-
 	bOverlappingCombatSphere = false;
 
 	Health = 75.f;
 	MaxHealth = 100.f;
 	Damage = 10.f;
+
 }
 
 // Called when the game starts or when spawned
@@ -50,12 +41,6 @@ void AEnemy::BeginPlay()
 
 	CombatSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::CombatSphereOnOverlapBegin);
 	CombatSphere->OnComponentEndOverlap.AddDynamic(this, &AEnemy::CombatSphereOnOverlapEnd);
-
-
-	CombatCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	CombatCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
-	CombatCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-	CombatCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 	
 }
 
@@ -167,34 +152,4 @@ void AEnemy::MoveToTarget(AMain* Target)
 		}
 		*/
 	}
-}
-
-void AEnemy::CombatOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
-{
-	if (OtherActor)
-	{
-		AMain* Main = Cast<AMain>(OtherActor);
-		if (Main)
-		{
-			if (Main->HitParticles)
-			{
-				const USkeletalMeshSocket* TipSocket = GetMesh()->GetSocketByName("TipSocket");
-				if (TipSocket)
-				{
-					FVector SocketLocation = TipSocket->GetSocketLocation(GetMesh());
-					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Main->HitParticles, GetActorLocation(), FRotator(0.f), false);
-				}
-
-			}
-			if (Main->HitSound)
-			{
-				UGameplayStatics::PlaySound2D(this, Main->HitSound);
-			}
-		}
-	}
-}
-
-void AEnemy::CombatOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-
 }
