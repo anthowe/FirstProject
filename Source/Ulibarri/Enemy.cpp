@@ -173,7 +173,7 @@ void AEnemy::MoveToTarget(AMain* Target)
 
 		AIController->MoveTo(MoveRequest, &NavPath);
 
-		auto PathPoints = NavPath->GetPathPoints();
+		//auto PathPoints = NavPath->GetPathPoints();
 		/**
 		for (auto Point : PathPoints)
 		{
@@ -276,7 +276,7 @@ float AEnemy::TakeDamage(float DamageAmount, struct FDamageEvent const & DamageE
 {
 	if (Health - DamageAmount <= 0.f)
 	{
-		Health -= DamageAmount;
+		Health = 0.f;
 		Die();
 	}
 	else
@@ -289,19 +289,22 @@ float AEnemy::TakeDamage(float DamageAmount, struct FDamageEvent const & DamageE
 void AEnemy::Die()
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Dead);
 
 	if (AnimInstance)
 	{
 		AnimInstance->Montage_Play(CombatMontage, 1.35f);
 		AnimInstance->Montage_JumpToSection(FName("Death"));
 	}
-	SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Dead);
+	
 
 	CombatCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	AgroSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	CombatSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	bAttacking = false;
 }
 
 void AEnemy::DeathEnd()
