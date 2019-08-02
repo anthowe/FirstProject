@@ -341,7 +341,7 @@ void AMain::Die()
 	if (AnimInstance && CombatMontage)
 	{
 		AnimInstance->Montage_Play(CombatMontage, 1.f);
-		AnimInstance->Montage_JumpToSection(FName("Death"));
+		AnimInstance->Montage_JumpToSection(FName("Death"), CombatMontage);
 	}
 }
 

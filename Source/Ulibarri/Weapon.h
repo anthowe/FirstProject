@@ -77,7 +77,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DeactivateCollision();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category ="Combat")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
 	TSubclassOf<UDamageType> DamageTypeClass;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
