@@ -3,17 +3,18 @@
 #include "Enemy.h"
 #include "Components/SphereComponent.h"
 #include "AIController.h"
-#include "AI/Navigation/NavigationTypes.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Sound/SoundCue.h"
 #include "Main.h"
+#include "MainPlayerController.h"
 #include "Components/BoxComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Animation/AnimInstance.h"
 #include "TimerManager.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/Actor.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -43,7 +44,7 @@ AEnemy::AEnemy()
 
 	EnemyMovementStatus = EEnemyMovementStatus::EMS_Idle;
 
-	DeathDelay = 3.f;
+	DeathDelay = 1.f;
 }
 
 // Called when the game starts or when spawned
@@ -105,6 +106,11 @@ void  AEnemy::AgroSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, A
 		{
 			if (Main)
 			{
+				
+				if (Main->MainPlayerController)
+				{
+					Main->MainPlayerController->RemoveEnemyHealthBar();
+				}
 				SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Idle);
 				if (AIController)
 				{
@@ -124,6 +130,11 @@ void  AEnemy::CombatSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponen
 			if (Main)
 			{
 				Main->SetCombatTarget(this);
+				Main->SetHasCombatTarget(true);
+				if (Main->MainPlayerController)
+				{
+					Main->MainPlayerController->DisplayEnemyHealthBar();
+				}
 				CombatTarget = Main;
 				bOverlappingCombatSphere = true;
 				Attack();
@@ -142,16 +153,20 @@ void AEnemy::CombatSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, 
 		{
 			if (Main)
 			{
+				bOverlappingCombatSphere = false;
+				MoveToTarget(Main);
+				CombatTarget = nullptr;
 				if (Main->CombatTarget == this)
 				{
+					Main->SetCombatTarget(false);
 					Main->SetCombatTarget(nullptr);
 				}
-				bOverlappingCombatSphere = false;
-				if (EnemyMovementStatus != EEnemyMovementStatus::EMS_Attacking)
+				
+			/*	if (EnemyMovementStatus != EEnemyMovementStatus::EMS_Attacking)
 				{
 					MoveToTarget(Main);
 					CombatTarget = nullptr;
-				}
+				}*/
 				GetWorldTimerManager().ClearTimer(AttackTimer);
 				
 			}
@@ -173,7 +188,7 @@ void AEnemy::MoveToTarget(AMain* Target)
 
 		AIController->MoveTo(MoveRequest, &NavPath);
 
-		auto PathPoints = NavPath->GetPathPoints();
+		//auto PathPoints = NavPath->GetPathPoints();
 		/**
 		for (auto Point : PathPoints)
 		{
@@ -267,6 +282,7 @@ void AEnemy::AttackEnd()
 	bAttacking = false;
 	if (bOverlappingCombatSphere)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("AttackEnd!"));
 		float AttackTime = FMath::RandRange(AttackMinTime, AttackMaxTime);
 		GetWorldTimerManager().SetTimer(AttackTimer, this, &AEnemy::Attack, AttackTime);
 	}
@@ -276,7 +292,7 @@ float AEnemy::TakeDamage(float DamageAmount, struct FDamageEvent const & DamageE
 {
 	if (Health - DamageAmount <= 0.f)
 	{
-		Health -= DamageAmount;
+		Health =0.f;
 		Die();
 	}
 	else
@@ -288,27 +304,33 @@ float AEnemy::TakeDamage(float DamageAmount, struct FDamageEvent const & DamageE
 
 void AEnemy::Die()
 {
+	
+	SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Dead);
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 
+	
 	if (AnimInstance)
 	{
-		AnimInstance->Montage_Play(CombatMontage, 1.35f);
-		AnimInstance->Montage_JumpToSection(FName("Death"));
+		AnimInstance->Montage_Play(CombatMontage, 1.0f);
+		AnimInstance->Montage_JumpToSection(FName("Death"), CombatMontage);
 	}
-	SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Dead);
+	
 
 	CombatCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	AgroSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	CombatSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	bAttacking = false;
 }
 
 void AEnemy::DeathEnd()
 {
+	
 	GetMesh()->bPauseAnims = true;
 	GetMesh()->bNoSkeletonUpdate = true;
-
+	
 	GetWorldTimerManager().SetTimer(DeathTimer, this, &AEnemy::Disappear, DeathDelay);
 }
 
@@ -320,4 +342,5 @@ bool  AEnemy::Alive()
 void AEnemy::Disappear()
 {
 	Destroy();
+	
 }

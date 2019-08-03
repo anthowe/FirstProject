@@ -42,10 +42,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
 	class AAIController* AIController;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy")
 	float Health;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy")
 	float MaxHealth;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
@@ -141,6 +141,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DeathEnd();
 
+	UFUNCTION(BlueprintCallable)
 	bool Alive();
 
 	void Disappear();

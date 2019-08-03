@@ -33,7 +33,17 @@ public:
 	// Sets default values for this character's properties
 	AMain();
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+	bool bHasCombatTarget;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category ="Controller")
+	class AMainPlayerController* MainPlayerController;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Controller")
+	FVector CombatTargetLocation;
+
+
+	FORCEINLINE void SetHasCombatTarget(bool HasTarget) { bool bHasCombatTarget = HasTarget; }
 
 	TArray<FVector> PickupLocations;
 
