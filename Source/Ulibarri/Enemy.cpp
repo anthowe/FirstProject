@@ -44,7 +44,9 @@ AEnemy::AEnemy()
 
 	EnemyMovementStatus = EEnemyMovementStatus::EMS_Idle;
 
-	DeathDelay = 1.f;
+	DeathDelay = 3.f;
+
+	bHasValidTarget = false;
 }
 
 // Called when the game starts or when spawned
@@ -106,6 +108,7 @@ void  AEnemy::AgroSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, A
 		{
 			if (Main)
 			{
+				bHasValidTarget = false;
 				Main->SetHasCombatTarget(false);
 				if (Main->CombatTarget == this)
 				{
@@ -136,6 +139,7 @@ void  AEnemy::CombatSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponen
 		{
 			if (Main)
 			{
+				bHasValidTarget = true;
 				Main->SetCombatTarget(this);
 				Main->SetHasCombatTarget(true);
 				if (Main->MainPlayerController)
@@ -245,7 +249,7 @@ void AEnemy::DeactivateCollision()
 
 void AEnemy::Attack()
 {
-	if (Alive())
+	if (Alive() && bHasValidTarget)
 	{
 		if (AIController)
 		{

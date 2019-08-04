@@ -249,7 +249,7 @@ void AMain::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AMain::MoveForward(float Value)
 {
-	if ((Controller != nullptr) && (Value != 0.f) && (!bAttacking))
+	if ((Controller != nullptr) && (Value != 0.f) && (!bAttacking) && (MovementStatus != EMovementStatus::EMS_Dead))
 	{
 
 		//Find out which way is forward
@@ -263,7 +263,7 @@ void AMain::MoveForward(float Value)
 
 void AMain::MoveRight(float Value)
 {
-	if ((Controller != nullptr) && (Value != 0.f) && (!bAttacking))
+	if ((Controller != nullptr) && (Value != 0.f) && (!bAttacking) && (MovementStatus != EMovementStatus::EMS_Dead))
 	{
 		//Find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -317,16 +317,7 @@ void AMain::LMBUp()
 
 void AMain::DecrementHealth(float Amount)
 {
-	if (Health - Amount <= 0.f)
-	{
-		Health -= Amount;
-		Die();
-	}
 
-	else
-	{
-		Health -= Amount;
-	}
 }
 
 
@@ -464,6 +455,23 @@ void AMain::SetInterpToEnemy(bool Interp)
 
 float AMain::TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEvent, class AController * EventInstigator, AActor * DamageCauser)
 {
-	DecrementHealth(DamageAmount);
+	if (Health - DamageAmount <= 0.f)
+	{
+		Health -= DamageAmount;
+		Die();
+		if (DamageCauser)
+		{
+			AEnemy* Enemy = Cast<AEnemy>(DamageCauser);
+			if (Enemy)
+			{
+				Enemy->bHasValidTarget = false;
+			}
+		}
+	}
+
+	else
+	{
+		Health -= DamageAmount;
+	}
 	return DamageAmount;
 }
