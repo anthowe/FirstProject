@@ -10,13 +10,16 @@ void AMainPlayerController::BeginPlay()
 	Super::BeginPlay();
 
 	if (HUDOverlayAsset)
+
+		UE_LOG(LogTemp, Warning, TEXT("BeginPlay-HUDOverlayAsset"));
 	{
 		HUDOverlay = CreateWidget<UUserWidget>(this, HUDOverlayAsset);
 	}
 	HUDOverlay->AddToViewport();
 	HUDOverlay->SetVisibility(ESlateVisibility::Visible);
-	if (EnemyHealthBar)
+	if (WEnemyHealthBar)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("BeginPlay-WEnemyHealthBar"));
 		EnemyHealthBar = CreateWidget<UUserWidget>(this, WEnemyHealthBar);
 		if (EnemyHealthBar)
 		{
@@ -55,7 +58,9 @@ void AMainPlayerController::Tick(float DeltaTime)
 		FVector2D PositionInViewport;
 		ProjectWorldLocationToScreen(EnemyLocation, PositionInViewport);
 
-		FVector2D SizeInViewport = FVector2D(200.f, 25.f);
+		FVector2D SizeInViewport = FVector2D(300.f, 25.f);
+
+		PositionInViewport.Y -= 85.f;
 
 		EnemyHealthBar->SetPositionInViewport(PositionInViewport);
 		EnemyHealthBar->SetDesiredSizeInViewport(SizeInViewport);

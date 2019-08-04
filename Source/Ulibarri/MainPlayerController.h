@@ -16,6 +16,12 @@ class ULIBARRI_API AMainPlayerController : public APlayerController
 	
 public:
 
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Widgets")
+	class UUserWidget* EnemyHealthBar;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets")
+	TSubclassOf<UUserWidget> WEnemyHealthBar;
 	/**Reference to the UMG asset in the editor*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets")
 	TSubclassOf<class UUserWidget> HUDOverlayAsset;
@@ -24,11 +30,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets")
 	UUserWidget* HUDOverlay;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets")
-	TSubclassOf<UUserWidget> WEnemyHealthBar;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Widgets")
-	UUserWidget* EnemyHealthBar;
 
 	bool bEnemyHealthBarVisible;
 

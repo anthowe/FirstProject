@@ -9,6 +9,7 @@
 #include "Engine/World.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/Character.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -91,6 +92,7 @@ void AMain::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (MovementStatus == EMovementStatus::EMS_Dead)return;
 
 	float DeltaStamina = StaminaDrainRate * DeltaTime;
 
@@ -205,6 +207,7 @@ void AMain::Tick(float DeltaTime)
 		if (MainPlayerController)
 		{
 			MainPlayerController->EnemyLocation = CombatTargetLocation;
+
 		}
 	}
 }
@@ -223,7 +226,7 @@ void AMain::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	check(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AMain::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &AMain::ShiftKeyDown);
@@ -286,6 +289,7 @@ void AMain::LookUpAtRate(float Rate)
 void AMain::LMBDown()
 {
 	bLMBDown = true;
+	if (MovementStatus == EMovementStatus::EMS_Dead) return;
 
 	if (ActiveOverlappingItem)
 	{
@@ -310,21 +314,6 @@ void AMain::LMBUp()
 {
 	bLMBDown = false;
 }
-
-//void AMain::RMBDown()
-//{
-//	bRMBDown = true;
-//	if (EquippedWeapon)
-//	{
-//		Attack();
-//	}
-//}
-//
-//void AMain::RMBUp()
-//
-//{
-//	bRMBDown = false;
-//}
 
 void AMain::DecrementHealth(float Amount)
 {
@@ -354,6 +343,20 @@ void AMain::Die()
 		AnimInstance->Montage_Play(CombatMontage, 1.f);
 		AnimInstance->Montage_JumpToSection(FName("Death"), CombatMontage);
 	}
+	SetMovementStatus(EMovementStatus::EMS_Dead);
+}
+void AMain::Jump()
+{
+	if (MovementStatus != EMovementStatus::EMS_Dead)
+	{
+		ACharacter::Jump();
+	}
+}
+void  AMain::DeathEnd()
+{
+	GetMesh()->bPauseAnims = true;
+	GetMesh()->bNoSkeletonUpdate = true;
+
 }
 
 void AMain::SetMovementStatus(EMovementStatus Status)
@@ -404,7 +407,7 @@ void AMain::SetEquippedWeapon(AWeapon* WeaponToSet)
 }
 void AMain::Attack()
 {
-	if (!bAttacking)
+	if (!bAttacking && MovementStatus !=EMovementStatus::EMS_Dead)
 	{
 		bAttacking = true;
 		SetInterpToEnemy(true);

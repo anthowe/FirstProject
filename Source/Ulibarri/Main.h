@@ -11,6 +11,8 @@ enum class EMovementStatus : uint8
 {
 	EMS_Normal UMETA(DisplayName = "Normal"),
 	EMS_Sprinting UMETA(DisplayName = "Sprinting"),
+	EMS_Dead UMETA(DisplayName = "Dead"),
+
 	EMS_MAX UMETA(DisplayName = "Default MAX")
 };
 
@@ -39,16 +41,13 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category ="Controller")
 	class AMainPlayerController* MainPlayerController;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Controller")
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Controller")
 	FVector CombatTargetLocation;
-
-
-	FORCEINLINE void SetHasCombatTarget(bool HasTarget) { bool bHasCombatTarget = HasTarget; }
+	
+	FORCEINLINE void SetHasCombatTarget(bool HasTarget) { bHasCombatTarget = HasTarget; }
 
 	TArray<FVector> PickupLocations;
-
 	
-
 	UFUNCTION(BlueprintCallable)
 	void ShowPickupLocations();
 
@@ -143,6 +142,8 @@ public:
 
 	void Die();
 
+	virtual void Jump() override;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
 	class UParticleSystem* HitParticles;
 
@@ -168,10 +169,7 @@ public:
 	void LMBDown();
 	void LMBUp();
 
-	//bool bRMBDown;
-	//void RMBDown();
-	//void RMBUp();
-
+	
 	/**Called via input to turn at a current rate
 	* @param Rate, This is a normalized rate, ie. 1.0 = 100% of turn value
 	*/
@@ -208,4 +206,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void PlaySwingSound();
+
+	UFUNCTION(BlueprintCallable)
+	void DeathEnd();
 };

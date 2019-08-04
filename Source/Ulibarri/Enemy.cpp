@@ -106,11 +106,18 @@ void  AEnemy::AgroSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, A
 		{
 			if (Main)
 			{
-				
+				Main->SetHasCombatTarget(false);
+				if (Main->CombatTarget == this)
+				{
+
+					Main->SetCombatTarget(nullptr);
+				}
 				if (Main->MainPlayerController)
 				{
+					USkeletalMeshComponent* MainMesh = Cast<USkeletalMeshComponent>(OtherComp);
 					Main->MainPlayerController->RemoveEnemyHealthBar();
 				}
+				
 				SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Idle);
 				if (AIController)
 				{
@@ -154,19 +161,12 @@ void AEnemy::CombatSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, 
 			if (Main)
 			{
 				bOverlappingCombatSphere = false;
-				MoveToTarget(Main);
-				CombatTarget = nullptr;
-				if (Main->CombatTarget == this)
-				{
-					Main->SetCombatTarget(false);
-					Main->SetCombatTarget(nullptr);
-				}
-				
-			/*	if (EnemyMovementStatus != EEnemyMovementStatus::EMS_Attacking)
+			
+				if (EnemyMovementStatus != EEnemyMovementStatus::EMS_Attacking)
 				{
 					MoveToTarget(Main);
 					CombatTarget = nullptr;
-				}*/
+				}
 				GetWorldTimerManager().ClearTimer(AttackTimer);
 				
 			}
@@ -188,15 +188,6 @@ void AEnemy::MoveToTarget(AMain* Target)
 
 		AIController->MoveTo(MoveRequest, &NavPath);
 
-		//auto PathPoints = NavPath->GetPathPoints();
-		/**
-		for (auto Point : PathPoints)
-		{
-			FVector Location = Point.Location;
-
-			UKismetSystemLibrary::DrawDebugSphere(this, Location, 25.f, 8, FLinearColor::Red, 10.f, 1.5f);
-		}
-		*/
 	}
 }
 void AEnemy::CombatOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
@@ -305,7 +296,7 @@ float AEnemy::TakeDamage(float DamageAmount, struct FDamageEvent const & DamageE
 void AEnemy::Die()
 {
 	
-	SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Dead);
+	
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 
 	
@@ -315,6 +306,7 @@ void AEnemy::Die()
 		AnimInstance->Montage_JumpToSection(FName("Death"), CombatMontage);
 	}
 	
+	SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Dead);
 
 	CombatCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	AgroSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -327,7 +319,7 @@ void AEnemy::Die()
 
 void AEnemy::DeathEnd()
 {
-	
+	UE_LOG(LogTemp, Warning, TEXT("DeathEnd!"));
 	GetMesh()->bPauseAnims = true;
 	GetMesh()->bNoSkeletonUpdate = true;
 	
