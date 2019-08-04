@@ -2,6 +2,9 @@
 
 #include "Explosive.h"
 #include "Main.h"
+#include "Kismet/GameplayStatics.h"
+#include "Engine/World.h"
+#include "Sound/SoundCue.h"
 
 AExplosive::AExplosive()
 {
@@ -12,7 +15,7 @@ void AExplosive::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor
 {
 	Super::OnOverlapBegin(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 
-	UE_LOG(LogTemp, Warning, TEXT("Explosive::OnOverlapBegin()"));
+
 
 	if (OtherActor)
 	{
@@ -21,7 +24,16 @@ void AExplosive::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor
 		if (Main)
 		{
 			Main->DecrementHealth(Damage);
+			
+			if (OverlapParticles)
+			{
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), OverlapParticles, GetActorLocation(), FRotator(0.0f), true);
+			}
 
+			if (OverlapSounds)
+			{
+				UGameplayStatics::PlaySound2D(this, OverlapSounds);
+			}
 			Destroy();
 		}
 	}
@@ -33,5 +45,5 @@ void AExplosive::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* 
 	
 		Super::OnOverlapEnd(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex);
 
-		UE_LOG(LogTemp, Warning, TEXT("Explosive::OnOverlapEnd()"));
+		
 }
