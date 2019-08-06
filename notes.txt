@@ -1,0 +1,3 @@
+Skeletal Mesh : Minion_Lane_Melee_Core_Dawn
+Skeleton : Minion_Lane_Core_Skeleton
+Blendspace : IdleToRun_A_Combat
