@@ -74,11 +74,12 @@ Intermediate/*
 # Cache files for the editor to use
 DerivedDataCache/*
 Content/InfinityBladeEffects/*
-
+Content/InfinityBladeGrassLands/*
 
 Content/InfinityBladeAdversaries/*
 Content/InfinityBladeFireLands/*
 Content/InfinityBladeWeapons/*
+Content/ParagonMinions/*
 
 Content/StarterContent/*
 
