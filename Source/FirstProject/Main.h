@@ -36,6 +36,9 @@ public:
 	// Sets default values for this character's properties
 	AMain();
 
+	UPROPERTY(EditDefaultsOnly, Category = "SavedData")
+	TSubclassOf<class AItemStorage> WeaponStorage;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
 	bool bHasCombatTarget;
 
@@ -229,6 +232,6 @@ public:
 	void SaveGame();
 
 	UFUNCTION(BlueprintCallable)
-	void LoadGame();
+	void LoadGame(bool SetPosition);
 
 };

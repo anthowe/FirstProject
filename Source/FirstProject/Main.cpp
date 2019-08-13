@@ -591,7 +591,7 @@ void  AMain::SaveGame()
 }
 
 
-void  AMain::LoadGame()
+void  AMain::LoadGame(bool SetPosition)
 {
 	UFirstSaveGame* LoadGameInstance = Cast<UFirstSaveGame>(UGameplayStatics::CreateSaveGameObject(UFirstSaveGame::StaticClass()));
 
@@ -603,5 +603,10 @@ void  AMain::LoadGame()
 	MaxStamina = LoadGameInstance->CharacterStats.MaxStamina;
 	Coins = LoadGameInstance->CharacterStats.Coins;
 
+	if (SetPosition)
+	{
+		SetActorLocation(LoadGameInstance->CharacterStats.Location);
+		SetActorRotation(LoadGameInstance->CharacterStats.Rotation);
+	}
 
 }
