@@ -19,6 +19,7 @@
 #include "Animation/AnimInstance.h"
 #include "MainPlayerController.h"
 #include "FirstSaveGame.h"
+#include "ItemStorage.h"
 
 
 // Sets default values
@@ -65,7 +66,8 @@ AMain::AMain()
 
 		bShiftKeyDown = false;
 		bLMBDown = false;
-		/*bRMBDown = false;*/
+		bESCDown = false;
+		
 
 		
 
@@ -252,11 +254,11 @@ void AMain::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &AMain::ShiftKeyDown);
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &AMain::ShiftKeyUp);
 
+	PlayerInputComponent->BindAction("ESC", IE_Pressed, this, &AMain::ESCDown);
+	PlayerInputComponent->BindAction("ESC", IE_Released, this, &AMain::ESCUp);
+
 	PlayerInputComponent->BindAction("LMB", IE_Pressed, this, &AMain::LMBDown);
 	PlayerInputComponent->BindAction("LMB", IE_Released, this, &AMain::LMBUp);
-
-	/*PlayerInputComponent->BindAction("RMB", IE_Pressed, this, &AMain::RMBDown);
-	PlayerInputComponent->BindAction("RMB", IE_Released, this, &AMain::RMBUp);*/
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMain::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AMain::MoveRight);
@@ -341,6 +343,14 @@ void AMain::LMBUp()
 	bLMBDown = false;
 }
 
+void AMain::ESCDown()
+{
+	bESCDown = true;
+}
+void AMain::ESCUp()
+{
+	bESCDown = false;
+}
 void AMain::DecrementHealth(float Amount)
 {
 
@@ -584,6 +594,11 @@ void  AMain::SaveGame()
 	SaveGameInstance->CharacterStats.MaxStamina = MaxStamina;
 	SaveGameInstance->CharacterStats.Coins = Coins;
 
+	if (EquippedWeapon)
+	{
+		SaveGameInstance->CharacterStats.WeaponName = EquippedWeapon->Name;
+	}
+
 	SaveGameInstance->CharacterStats.Location = GetActorLocation();
 	SaveGameInstance->CharacterStats.Rotation = GetActorRotation();
 
@@ -602,6 +617,20 @@ void  AMain::LoadGame(bool SetPosition)
 	Stamina = LoadGameInstance->CharacterStats.Stamina;
 	MaxStamina = LoadGameInstance->CharacterStats.MaxStamina;
 	Coins = LoadGameInstance->CharacterStats.Coins;
+
+	if (WeaponStorage)
+	{
+		AItemStorage* Weapons = GetWorld()->SpawnActor<AItemStorage>(WeaponStorage);
+
+		if (Weapons)
+		{
+			FString WeaponName = LoadGameInstance->CharacterStats.WeaponName;
+			
+			AWeapon* WeaponToEquip = GetWorld()->SpawnActor<AWeapon>(Weapons->WeaponMap[WeaponName]);
+			WeaponToEquip->Equip(this);
+		}
+	}
+
 
 	if (SetPosition)
 	{

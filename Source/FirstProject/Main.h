@@ -180,6 +180,9 @@ public:
 	void LMBDown();
 	void LMBUp();
 
+	bool bESCDown;
+	void ESCDown();
+	void ESCUp();
 	
 	/**Called via input to turn at a current rate
 	* @param Rate, This is a normalized rate, ie. 1.0 = 100% of turn value
