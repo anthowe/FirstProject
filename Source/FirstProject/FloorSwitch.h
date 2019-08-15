@@ -21,10 +21,15 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category ="Floor Switch")
 	class UBoxComponent* TriggerBox;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Floor Switch")
+	UBoxComponent* TriggerBox1;
+
 	/** Switch for the character to step on*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Floor Switch")
 	class UStaticMeshComponent* FloorSwitch;
-
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Floor Switch")
+	UStaticMeshComponent* FloorSwitch1;
 	/** Door to move when the floor switch is stepped on*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Floor Switch")
 	UStaticMeshComponent* Door;

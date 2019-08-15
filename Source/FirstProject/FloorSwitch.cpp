@@ -21,9 +21,23 @@ AFloorSwitch::AFloorSwitch()
 
 	TriggerBox->SetBoxExtent(FVector(62.f, 62.f, 32.f));
 	
+	TriggerBox1 = CreateDefaultSubobject<UBoxComponent>(TEXT("TriggerBox1"));
+	TriggerBox1->SetupAttachment(GetRootComponent());
+
+	TriggerBox1->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	TriggerBox1->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
+	TriggerBox1->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	TriggerBox1->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+
+	TriggerBox1->SetBoxExtent(FVector(62.f, 62.f, 32.f));
 
 	FloorSwitch = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FloorSwitch"));
 	FloorSwitch->SetupAttachment(GetRootComponent());
+	SwitchTime = 2.f;
+	bCharacterOnSwitch = false;
+
+	FloorSwitch1 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FloorSwitch1"));
+	FloorSwitch1->SetupAttachment(GetRootComponent());
 	SwitchTime = 2.f;
 	bCharacterOnSwitch = false;
 
@@ -38,6 +52,9 @@ void AFloorSwitch::BeginPlay()
 
 	TriggerBox->OnComponentBeginOverlap.AddDynamic(this, &AFloorSwitch::OnOverlapBegin);
 	TriggerBox->OnComponentEndOverlap.AddDynamic(this, &AFloorSwitch::OnOverlapEnd);
+
+	TriggerBox1->OnComponentBeginOverlap.AddDynamic(this, &AFloorSwitch::OnOverlapBegin);
+	TriggerBox1->OnComponentEndOverlap.AddDynamic(this, &AFloorSwitch::OnOverlapEnd);
 
 	InitialDoorLocation = Door->GetComponentLocation();
 	InitialSwitchLocation = FloorSwitch->GetComponentLocation();

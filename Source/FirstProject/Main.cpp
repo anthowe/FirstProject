@@ -346,6 +346,10 @@ void AMain::LMBUp()
 void AMain::ESCDown()
 {
 	bESCDown = true;
+	if (MainPlayerController)
+	{
+		MainPlayerController->TogglePauseMenu();
+	}
 }
 void AMain::ESCUp()
 {

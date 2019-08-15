@@ -78,21 +78,44 @@ void AMainPlayerController::Tick(float DeltaTime)
 	}
 }
 
-void AMainPlayerController::DisplayPauseMenu()
+void AMainPlayerController::DisplayPauseMenu_Implementation()
 {
 	if (PauseMenu)
 	{
 		bPauseMenuVisible = true;
 		PauseMenu->SetVisibility(ESlateVisibility::Visible);
+
+		FInputModeGameAndUI  InputModeGameAndUI;
+		SetInputMode(InputModeGameAndUI);
+
+		bShowMouseCursor = true;
 	}
 
 }
 
-void AMainPlayerController::RemovePauseMenu()
+void AMainPlayerController::RemovePauseMenu_Implementation()
 {
 	if (PauseMenu)
 	{
 		bPauseMenuVisible = false;
-		PauseMenu->SetVisibility(ESlateVisibility::Hidden);
+		
+
+		FInputModeGameOnly  InputModeGameOnly;
+		SetInputMode(InputModeGameOnly);
+		
+
+		bShowMouseCursor = false;
+	}
+}
+
+void AMainPlayerController::TogglePauseMenu()
+{
+	if (bPauseMenuVisible)
+	{
+		RemovePauseMenu();
+	}
+	else
+	{
+		DisplayPauseMenu();
 	}
 }
