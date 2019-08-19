@@ -173,8 +173,14 @@ public:
 
 	void MoveRight(float Value);
 
+	void Turn(float Value);
+
+	void LookUp(float Value);
+
 	bool bMovingForward;
 	bool bMovingRight;
+
+	bool CanMove(float Value);
 
 	bool bLMBDown;
 	void LMBDown();
@@ -236,5 +242,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void LoadGame(bool SetPosition);
+
+	
+	void LoadGameNoSwitch();
 
 };

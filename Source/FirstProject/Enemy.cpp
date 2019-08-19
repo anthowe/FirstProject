@@ -16,6 +16,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/Actor.h"
 
+
 // Sets default values
 AEnemy::AEnemy()
 {
@@ -32,6 +33,8 @@ AEnemy::AEnemy()
 
 	CombatCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("CombatCollision"));
 	CombatCollision->SetupAttachment(GetMesh(),FName("EnemySocket"));
+
+	
 
 	bOverlappingCombatSphere = false;
 
@@ -72,7 +75,8 @@ void AEnemy::BeginPlay()
 
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-	
+
+		
 }
 
 // Called every frame

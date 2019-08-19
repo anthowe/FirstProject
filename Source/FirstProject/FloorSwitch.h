@@ -16,6 +16,7 @@ public:
 	// Sets default values for this actor's properties
 	AFloorSwitch();
 
+	class UCapsuleComponent* Capsule;
 
 	/**Overlap volume for functionality to be triggered */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category ="Floor Switch")

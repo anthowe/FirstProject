@@ -3,6 +3,7 @@
 #include "FloorSwitch.h"
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "TimerManager.h"
 
 // Sets default values
@@ -11,8 +12,11 @@ AFloorSwitch::AFloorSwitch()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	Capsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule"));
+	RootComponent = Capsule;
+
 	TriggerBox = CreateDefaultSubobject<UBoxComponent>(TEXT("TriggerBox"));
-	RootComponent = TriggerBox;
+	
 
 	TriggerBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	TriggerBox->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);

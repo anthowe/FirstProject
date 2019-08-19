@@ -43,6 +43,8 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "HUD")
 	void RemovePauseMenu();
 
+	void GameModeOnly();
+
 	void TogglePauseMenu();
 
 
